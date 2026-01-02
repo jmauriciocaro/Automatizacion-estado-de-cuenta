@@ -1,0 +1,252 @@
+{
+  "name": "JulianBot2",
+  "nodes": [
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.message.text }}",
+        "options": {
+          "systemMessage": "Eres un asistente virtual de consulta de pagos escolares. Tu ÚNICA función es proporcionar nformación de estudiantes en Google Sheets incluyendo: nombre, celular, total deuda, total pagado, saldo pendiente, estado y EMAIL del padre de familia.\n\nREGLAS ESTRICTAS:\n1. SOLO puedes responder consultas sobre:\n   - Saldo pendiente de un estudiante\n   - Total de deuda de un estudiante\n   - Total pagado por un estudiante\n   - Estado de cuenta (Al día o Mora)\n\n2. SIEMPRE debes usar la herramienta de Google Sheets para obtener información\n3. NUNCA inventes datos ni proporciones información sin consultar la herramienta\n4. NO respondas preguntas sobre otros temas (fechas de pago, formas de pago, políticas, etc.)\n\nPROTOCOLO DE RESPUESTA:\n- Solicita el nombre del estudiante si no se proporciona\n- Busca la información en Google Sheets usando la herramienta\n- Proporciona SOLO los datos que aparecen en la hoja: Total Deuda, Total Pagado, Saldo Pendiente y Estado\n\nFORMATO DE RESPUESTA:\nPara consultas de saldo:\n\"Información de [Nombre del Estudiante]:\n- Total Deuda: $[monto]\n- Total Pagado: $[monto]\n- Saldo Pendiente: $[monto]\n- Estado: [Al día/Mora]\"\n\nMANEJO DE SITUACIONES:\n- Si el estudiante NO existe en la base de datos: \"Lo siento, no encontré el nombre [Nombre] en la base de datos. Por favor verifica el nombre.\"\n- Si te preguntan algo fuera de consultas de saldo: \"Solo puedo proporcionar información sobre saldos y estados de cuenta. ¿Sobre qué estudiante deseas consultar?\"\n- Si te saludan: Responde brevemente y pregunta: \"¿De qué estudiante deseas consultar el saldo?\"\n\nIMPORTANTE:\n- NO des consejos financieros\n- NO expliques procesos de pago\n- NO proporciones información de contacto\n- NO respondas preguntas sobre plazos o políticas\n- Si no tienes certeza, di: \"Permíteme consultar la información\" y usa la herramienta\n\nTu respuesta debe ser breve, clara y basada ÚNICAMENTE en los datos de Google Sheets.\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        208,
+        0
+      ],
+      "id": "56615f23-762f-4590-93f7-60dc5f5528e6",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": "moonshotai/kimi-k2-instruct",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        80,
+        208
+      ],
+      "id": "1afdbed2-c684-488e-8363-9af17a4c03e6",
+      "name": "Groq Chat Model",
+      "credentials": {
+        "groqApi": {
+          "id": "EJiJZczQBqyrBIce",
+          "name": "Groq account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1cU3gnD-vRPLzkYkDVIh116dTETHeD07UaPt0CSjZ_qc",
+          "mode": "list",
+          "cachedResultName": "Estudiantes",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1cU3gnD-vRPLzkYkDVIh116dTETHeD07UaPt0CSjZ_qc/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1986068171,
+          "mode": "list",
+          "cachedResultName": "Estados de cuenta",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1cU3gnD-vRPLzkYkDVIh116dTETHeD07UaPt0CSjZ_qc/edit#gid=1986068171"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.7,
+      "position": [
+        368,
+        208
+      ],
+      "id": "0706ce79-6b15-4232-9024-30c958972012",
+      "name": "Get row(s) in sheet in Google Sheets",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "C8mWFzpF5ZNZEwcx",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $json.message.message_id }}",
+        "contextWindowLength": 10
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        224,
+        208
+      ],
+      "id": "7865a58d-01be-4773-826d-1aeb913bbc65",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        0
+      ],
+      "id": "48bfd9e0-5c52-4f27-a42b-55b7b76c4c4f",
+      "name": "Telegram Trigger",
+      "webhookId": "59558f46-cfc0-4a86-b2ef-aab81a2d29bb",
+      "credentials": {
+        "telegramApi": {
+          "id": "n6HdNHpX74Ychjut",
+          "name": "Telegram account 3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "={{ $json.output }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        560,
+        0
+      ],
+      "id": "628eedf1-6922-42a2-8102-0dae539efec7",
+      "name": "Send a text message",
+      "webhookId": "0c97b776-33ef-423f-aed3-f0d872377479",
+      "credentials": {
+        "telegramApi": {
+          "id": "n6HdNHpX74Ychjut",
+          "name": "Telegram account 3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://ntfy.sh/pagos-bot-julian-2026",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Title",
+              "value": "Nueva Consulta Bot "
+            },
+            {
+              "name": "Priority",
+              "value": "default"
+            },
+            {
+              "name": "Tags",
+              "value": "moneybag,bell "
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "={{ $json.output }}",
+        "body": "=Consulta registrada Usuario: {{ $('Telegram Trigger').item.json.message.from.first_name }} Respuesta: {{ $('AI Agent').item.json.output }} Fecha: {{ $now.format('DD/MM/YYYY HH:mm') }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        592,
+        208
+      ],
+      "id": "3c1b25c1-3eb9-464a-a15d-66721ae80975",
+      "name": "HTTP Request"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Groq Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet in Google Sheets": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Send a text message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a text message": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "versionId": "2b54de17-ee1a-4367-bdbb-01be63a338a6",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "01a9a30a2352422952bac4442883477bcece4a0f8f39fb0a391313dc85221c3e"
+  },
+  "id": "zzcbSfAuJUiG8DOc",
+  "tags": []
+}
