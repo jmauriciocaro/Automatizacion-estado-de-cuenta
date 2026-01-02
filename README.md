@@ -14,6 +14,12 @@ Bot que permite a padres de familia consultar en tiempo real el estado de cuenta
 - ✅ Notificaciones push al administrador de cada consulta
 - ✅ Disponible 24/7 sin intervención humana
 
+## Links de uso:
+
+- [Bot Telegram](https://t.me/JulianJardin_bot )
+- [Google Sheets](https://docs.google.com/spreadsheets/d/1cU3gnD-vRPLzkYkDVIh116dTETHeD07UaPt0CSjZ_qc/edit?usp=sharing)
+
+
 ## 🏗️ Arquitectura
 
 <img width="947" height="374" alt="Captura de pantalla 2026-01-02 a la(s) 1 35 39 p m" src="https://github.com/user-attachments/assets/8778f172-5030-4607-9199-81c45db4d9a6" />
