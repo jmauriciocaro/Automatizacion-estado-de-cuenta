@@ -16,3 +16,5 @@ Bot que permite a padres de familia consultar en tiempo real el estado de cuenta
 
 ## 🏗️ Arquitectura
 
+<img width="947" height="374" alt="Captura de pantalla 2026-01-02 a la(s) 1 35 39 p m" src="https://github.com/user-attachments/assets/8778f172-5030-4607-9199-81c45db4d9a6" />
+
