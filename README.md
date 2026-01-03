@@ -24,3 +24,7 @@ Bot que permite a padres de familia consultar en tiempo real el estado de cuenta
 
 <img width="947" height="374" alt="Captura de pantalla 2026-01-02 a la(s) 1 35 39 p m" src="https://github.com/user-attachments/assets/8778f172-5030-4607-9199-81c45db4d9a6" />
 
+## Link de google sheet: https://docs.google.com/spreadsheets/d/1V3lM5X4rwHirJOfkDJBQ18LIPhtDT_M6e3obxxpTOi0/edit?usp=drivesdk
+- limpieza en hoja que inicia con copia
+- Resultados con formulas en hoja de Dashboard
+    NOTA: Se nota que en los resultados esperados tambien se encuntren inconsistencias, debido a que almrealizar las pruebas darian más de los 50.000 datos que hay.
